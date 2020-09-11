@@ -1,2 +1,2 @@
 In medical imaging it is common for images to be generated in a specific format known as DICOM. The DICOM format (.dcm) comprises an image component (img) and a metadata component (hdr). There are many different proprietary softwares which can be used to visualize the DICOM image. 
-However, it is my intention to create a framework whereby users can make the direct connection between the image quality and image acquisition parameters. This package makes that connection.
+However, it is my intention to create a framework whereby users can make the direct connection between the aesthetic image quality and the underlying data. This package makes that connection.
