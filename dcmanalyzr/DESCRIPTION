@@ -1,0 +1,16 @@
+Package: dcmanalyzr
+Type: Package
+Title: What the Package Does Using Title Case
+Version: 1.0
+Date: 2019-03-13
+Author: David Trease
+Maintainer: David Trease <davidtrease@gmail.com>
+Imports: imager, oro.dicom, graphics, grDevices, magrittr, R.utils 
+Description: More details about what the package does. See
+          <http://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file>
+          for details on how to write this part.
+License: GPL (>= 2)
+RoxygenNote: 6.1.1.9000
+Encoding: UTF-8
+Suggests: knitr, rmarkdown, devtools
+VignetteBuilder: knitr

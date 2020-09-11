@@ -1,0 +1,88 @@
+---
+title: "Classifying and outputting medical image data with dcm_analyzr"
+author: "David Trease"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Classifying and outputting medical image data with dcm_analyzr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In medical imaging it is common for images to be generated in a specific format known as DICOM. The DICOM format (.dcm) comprises an image component (img) and a metadata component (hdr). There are many different proprietary softwares which can be used to visualize the DICOM image. 
+However, it is my intention to create a framework whereby users can make the direct connection between the image quality and image acquisition parameters. This package makes that connection.
+
+## DICOM Datascraping
+
+If one has a folder with multiple DICOM image files, one can utilize this package to extract all the header data from the all of the files and output them to a single dataframe using **dcm_metadata**.
+
+```{r, eval = FALSE}
+combined.metadata <- dcm_metadata(directory)
+```
+
+You can extract this metadata from the sample .dcm files included in this package
+
+```{r, eval = FALSE}
+sample_metadata <- dcm_metadata(system.file('extdata', package = 'dcmanalyzr'))
+```
+
+## DICOM Visualization
+
+One may wish to, at a glance, visualize all the DICOM images in a given directory. That's easy enough with this package, using **dcm_allview**. Rather than using a usual grayscale, the intensities are mapped to a rainbow colormap which can help the user visualize small variations in signal
+
+```{r, eval = FALSE}
+dcm_allview(directory)
+```
+
+Visualize the packaged DICOM data with:
+
+```{r, eval = FALSE}
+dcm_allview(system.file('extdata', package = 'dcmanalyzr'))
+```
+
+## DICOM Classification
+
+With all that in mind, the meat of this package is in the **dcm_select** function.
+
+```{r, eval = FALSE}
+classified.data <- dcm_select(directory)
+```
+
+This function initiates the classification process, which will be explained in detail below. As is also the case with the other two functions, calling this function with no argument begins the classification process in the working directory.
+
+You can perform your own DICOM classification with the following function:
+
+```{r, eval = FALSE}
+classified_data <- dcm_select(system.file('extdata', package = 'dcmanalyzr'))
+```
+
+Upon calling the function, the user is presented with a panel of diagnostic outputs from image processing that allow the user to evaluate whether the image is acceptable or unacceptable
+
+Image 1: Rendering of the raw DICOM image.
+
+Grey Level Histogram: Gray level histogram of the image. This enables the user to evaluate the dynamic range of the image. In principle an image with a poor dynamic range may show a significant peak at the max gray level. 
+
+FFT Power Spectrum: 2D FFT of the image (k-space plot). Because of the generally low spacial resolution of the iamging technique I am working on, one should not expect to see much, if any, high frequency data (other than the folded zero peak at max freq). Any significant population at the higher frequencies indicates white noise, indicating poor SNR.
+
+FFT, ky=1, ky=5, ky=120: 1D slices through the 2D FFT at ky =1,5,120, helping to visualize the signal density at given frequencies.
+
+After viewing the data, the user must choose to either evaluate the DICOM as OK or unacceptable. If the user hits return, the function records that the image was OK. If the user types "n", followed by return, the function records that the image was poor. If the user wishes to exit, she can just type "q" followed by return.
+
+After cycling through all the DICOMs in the directory, the function outputs a dataframe with the DICOM metadata and the associated evaulation of the data.
+
+The user may now go ahead and perform standard statistical techniques to assess correlation between the IQ and the metadata, such as number of frames, image size, acquistion mode, etc.
+
+## Comments on hurdles encountered during package creation
+
+From a fundamental perspective, I have very little programming experience, so every step of the process of package creation has been a significant challenge for me. 
+
+I deviated from the original proposal in a few ways - first and foremost I was somewhat surprised by the absence of standard image quality analysis libraries available in CRAN. This somewhat limited my capability to generate the in-depth metrics that I would have liked to have had available. The next step would be to import such libraries from Python, which has a much stronger ecosystem in this regard.
+
+Being unable to generate the evaluative metrics that I had hoped limited my ability to automate the evaluation of whether IQ was acceptable or not. Thus I altered the course of the package development and instead made it an assisted classification tool. In that respect I think it is fairly successful. 
